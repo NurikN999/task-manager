@@ -12,6 +12,7 @@ from app.core.config import settings
 
 security_scheme = HTTPBearer()
 
+# Данный метод отвечает за создание сессии с базой данных
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with SessionLocal() as session:
         yield session
