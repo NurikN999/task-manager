@@ -17,6 +17,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with SessionLocal() as session:
         yield session
 
+# Этот метод отвечает за авторизацию пользователей
 async def get_current_user(
         credentials: HTTPAuthorizationCredentials = Depends(security_scheme),
         db: AsyncSession = Depends(get_db),
