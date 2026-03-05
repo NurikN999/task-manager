@@ -1,4 +1,5 @@
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
@@ -43,3 +44,14 @@ class UsersRepo:
         await db.commit()
         await db.refresh(user)
         return user
+
+    @staticmethod
+    async def get_by_id_with_tasks(db: AsyncSession, user_id: int):
+        stmt = (
+            select(User)
+            .where(User.id == user_id)
+            .options(selectinload(User.tasks))
+        )
+
+        result = await db.execute(stmt)
+        return result.scalar_one_or_none()

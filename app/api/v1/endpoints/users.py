@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_db, get_current_user
 from app.repositories.UsersRepo import UsersRepo
-from app.schemas.user import UserCreate, UserUpdate, UserOut
+from app.schemas.user import UserCreate, UserUpdate, UserOut, UserOutWithTasks
+from app.models.user import User
 
 router = APIRouter(prefix="/users", tags=["Пользователи"], dependencies=[Depends(get_current_user)])
 
@@ -23,3 +24,15 @@ async def create_user(
     if existing:
         raise HTTPException(status_code=409, detail="email уже занят")
     return await UsersRepo.create_user(db, payload)
+
+@router.get("/{user_id}", response_model=UserOutWithTasks, status_code=status.HTTP_200_OK)
+async def get_user_with_tasks(
+        db: AsyncSession = Depends(get_db),
+        current_user: User = Depends(get_current_user),
+):
+    user = await UsersRepo.get_by_id_with_tasks(db, user_id=current_user.id)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return user

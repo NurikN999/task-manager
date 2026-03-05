@@ -23,3 +23,12 @@ class TaskOut(BaseModel):
     user_id: int
 
     model_config = {"from_attributes": True}
+
+class TaskShortOut(BaseModel):
+    id: int
+    title: str
+    description: str | None
+    deadline: datetime | None
+    status: str
+
+    model_config = {"from_attributes": True}
